@@ -1,6 +1,6 @@
 # GhostBounties 👻
 
-GhostBounties is a bounty automation platform that pays developers instantly for completing micro-tasks on GitHub—without needing to trust the platform or reveal private data.
+GhostBounties is a bounty automation platform that pays developers instantly for completing micro-tasks on GitHub without needing to trust the platform or reveal private data.
 
 Using ZK-TLS proofs (vlayer), decentralized compute (Fluence), XMTP messaging, Polygon settlement, and SQD indexing, GhostBounties creates a trust-minimized workflow for developers to earn crypto by doing verifiable actions online.
 
@@ -288,3 +288,4 @@ This project wouldn't exist without these amazing tools:
 **GhostBounties** — Get paid for GitHub tasks, trustlessly. 👻
 
 Questions? Issues? Just want to say hi? [Open an issue](https://github.com/your-org/ghost-bot/issues) or reach out!
+
