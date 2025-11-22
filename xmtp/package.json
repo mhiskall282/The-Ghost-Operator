@@ -1,0 +1,37 @@
+{
+  "name": "ghost-bot-xmtp",
+  "version": "1.0.0",
+  "description": "XMTP agent for GhostBounties - autonomous task verification and payment system",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "node validate.mjs",
+    "test:simple": "tsx test-simple.ts",
+    "test:full": "tsx test-full.ts",
+    "validate": "node validate.mjs"
+  },
+  "keywords": [
+    "xmtp",
+    "agent",
+    "bounty",
+    "zk-proof",
+    "vlayer",
+    "fluence",
+    "polygon"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@xmtp/agent-sdk": "latest",
+    "ethers": "^6.13.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}
