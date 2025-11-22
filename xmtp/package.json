@@ -26,8 +26,8 @@
   "license": "MIT",
   "dependencies": {
     "@xmtp/agent-sdk": "latest",
-    "ethers": "^6.13.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
