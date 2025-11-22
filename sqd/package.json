@@ -1,0 +1,31 @@
+{
+  "name": "ghost-bounties-indexer",
+  "version": "0.1.0",
+  "description": "SQD indexer for GhostBounties",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "codegen": "sqd codegen",
+    "build:sqd": "sqd build",
+    "deploy": "sqd deploy"
+  },
+  "keywords": [
+    "sqd",
+    "indexer",
+    "bounties"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@subsquid/evm-processor": "^1.0.0",
+    "@subsquid/graphql-server": "^1.0.0",
+    "@subsquid/pipes": "^0.1.0-beta.6",
+    "@subsquid/substrate-processor": "^1.0.0"
+  },
+  "devDependencies": {
+    "@subsquid/cli": "^1.0.0",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  }
+}

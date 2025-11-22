@@ -1,0 +1,45 @@
+type Bounty @entity {
+  id: ID!
+  creator: String!
+  action: Int! # 0=Star, 1=Fork, 2=MergePR, 3=Comment, 4=OpenIssue
+  repoOwner: String!
+  repoName: String!
+  prOrIssueNumber: BigInt!
+  reward: BigInt!
+  status: Int! # 0=Active, 1=Completed, 2=Cancelled
+  completedBy: String
+  createdAt: BigInt!
+  completedAt: BigInt
+  createdAtTimestamp: Date!
+  completedAtTimestamp: Date
+}
+
+type Payout @entity {
+  id: ID!
+  bountyId: BigInt!
+  worker: String!
+  amount: BigInt!
+  timestamp: BigInt!
+  timestampDate: Date!
+  proofId: String
+}
+
+type Worker @entity {
+  id: ID! # worker address
+  completedBounties: Int!
+  totalEarnings: BigInt!
+  reputationScore: Float!
+  firstBountyAt: BigInt
+  lastBountyAt: BigInt
+  payouts: [Payout!]! @derivedFrom(field: "worker")
+}
+
+type Proof @entity {
+  id: ID! # proof ID from vlayer
+  bountyId: BigInt!
+  worker: String!
+  verified: Boolean!
+  timestamp: BigInt!
+  timestampDate: Date!
+}
+
