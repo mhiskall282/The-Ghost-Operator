@@ -116,6 +116,52 @@ ZK-TLS means users never reveal their GitHub tokens or cookies.
 
 • Reputation engine
 
+
+ghostbounties/
+│
+├── agent/                        # Fluence (Rust/Marine) autonomous agent
+│   ├── Cargo.toml
+│   ├── src/
+│   │   ├── main.rs               # Agent logic: verify proof, call contract
+│   │   ├── handlers.rs
+│   │   └── vlayer.rs             # Proof validation module
+│   └── README.md
+│
+├── contracts/                    # Polygon smart contracts
+│   ├── GhostVault.sol            # Escrow contract
+│   ├── GhostBounties.sol         # Task registry + payout logic
+│   ├── interfaces/
+│   └── scripts/
+│
+├── xmtp-agent/                   # XMTP chat agent
+│   ├── package.json
+│   ├── src/
+│   │   ├── index.ts              # message listener
+│   │   ├── commands.ts           # "jobs", "submit", "help"
+│   │   ├── fluenceClient.ts      # calls to the Fluence agent
+│   │   └── proverLink.ts         # generates vlayer prover URL
+│
+├── prover-client/                # vlayer ZK-TLS client
+│   ├── index.html                # browser app to capture TLS session
+│   ├── prover.js
+│   ├── zk/
+│   └── README.md
+│
+├── sqd-indexer/                  # SQD indexing logic
+│   ├── schema.graphql
+│   ├── src/
+│   │   ├── mapping.ts
+│   │   ├── reputation.ts
+│   │   └── payoutEvents.ts
+│
+├── docs/
+│   ├── architecture.md
+│   ├── system-flow.png
+│   └── bounty-format.md
+│
+├── README.md                     # main ETHGlobal README
+└── LICENSE
+
 SQD indexes everything to calculate a Worker Reputation Score.
 
 • Chat-native experience
