@@ -1,90 +1,106 @@
 #!/bin/bash
 
-# GhostBounties Deployment Script
-# This script automates the deployment process
+# Ghost Bounties Deployment Script
+# This script deploys all contracts for the Ghost Bounties system
 
-set -e  # Exit on error
+set -e
 
-echo "=========================================="
-echo "GhostBounties Deployment Script"
-echo "=========================================="
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
-# Check if .env exists
+echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║   Ghost Bounties Deployment Script    ║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
+echo ""
+
+# Check if .env file exists
 if [ ! -f .env ]; then
-    echo "Error: .env file not found!"
-    echo "Please copy env.template to .env and fill in your values"
+    echo -e "${YELLOW}⚠️  No .env file found. Creating from .env.example...${NC}"
+    cp .env.example .env
+    echo -e "${RED}❌ Please edit .env with your configuration and run again.${NC}"
     exit 1
 fi
 
-# Load environment variables (handle Windows line endings)
-export $(grep -v '^#' .env | grep -v '^$' | tr -d '\r' | xargs)
+# Load environment variables
+source .env
 
-# Check required variables
-if [ -z "$PRIVATE_KEY" ]; then
-    echo "Error: PRIVATE_KEY not set in .env"
+# Check if private key is set
+if [ "$PRIVATE_KEY" == "your_private_key_here" ] || [ -z "$PRIVATE_KEY" ]; then
+    echo -e "${RED}❌ Please set PRIVATE_KEY in .env file${NC}"
     exit 1
 fi
 
-if [ -z "$RPC_URL" ]; then
-    echo "Error: RPC_URL not set in .env"
-    exit 1
-fi
+# Create deployments directory if it doesn't exist
+mkdir -p deployments
 
-echo ""
-echo "Configuration:"
-echo "   RPC URL: $RPC_URL"
-echo "   Chain ID: ${CHAIN_ID:-31337}"
-echo "   Use Mock Token: ${USE_MOCK_TOKEN:-true}"
-echo ""
-
-# Check if we're deploying to Anvil
-if [[ "$RPC_URL" == *"127.0.0.1:8545"* ]] || [[ "$RPC_URL" == *"localhost:8545"* ]]; then
-    echo "Detected Anvil (local) deployment"
-    echo "   Make sure Anvil is running: anvil"
-    echo ""
-    read -p "Press Enter to continue or Ctrl+C to cancel..."
-fi
-
-# Build contracts first
-echo "Building contracts..."
-forge build
-
-if [ $? -ne 0 ]; then
-    echo "Build failed!"
-    exit 1
-fi
-
-echo "Build successful!"
-echo ""
-
-# Deploy contracts
-echo "Deploying contracts..."
-echo ""
-
-forge script script/DeployAll.s.sol:DeployAll \
-    --rpc-url "$RPC_URL" \
-    --broadcast \
-    -vvv
-
-if [ $? -eq 0 ]; then
-    echo ""
-    echo "=========================================="
-    echo "Deployment Successful!"
-    echo "=========================================="
-    echo ""
-    echo "Contract addresses saved to: deployment.addresses"
-    echo ""
-    if [ -f deployment.addresses ]; then
-        cat deployment.addresses
+# Function to deploy to a network
+deploy_to_network() {
+    local network=$1
+    local rpc_url=$2
+    
+    echo -e "\n${GREEN}📡 Deploying to $network...${NC}"
+    echo "RPC URL: $rpc_url"
+    
+    # Run forge script
+    forge script script/DeployGhostBounties.s.sol:DeployGhostBounties \
+        --rpc-url "$rpc_url" \
+        --broadcast \
+        --verify \
+        -vvvv
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ Deployment to $network successful!${NC}"
+        
+        # Copy deployment file with network name
+        if [ -f deployments/latest.json ]; then
+            cp deployments/latest.json "deployments/${network}.json"
+            echo -e "${GREEN}📄 Deployment addresses saved to deployments/${network}.json${NC}"
+        fi
+    else
+        echo -e "${RED}❌ Deployment to $network failed!${NC}"
+        exit 1
     fi
-    echo ""
-    echo "Next steps:"
-    echo "   1. Update your .env files with the contract addresses"
-    echo "   2. Update xmtp/.env with CONTRACT_ADDRESS and VAULT_ADDRESS"
-    echo "   3. Update sqd/.env with CONTRACT_ADDRESS and VAULT_ADDRESS"
-    echo ""
-else
-    echo ""
-    echo "Deployment failed!"
-    exit 1
-fi
+}
+
+# Parse command line arguments
+case "$1" in
+    polygon)
+        deploy_to_network "polygon" "$POLYGON_RPC_URL"
+        ;;
+    mumbai)
+        deploy_to_network "mumbai" "$POLYGON_MUMBAI_RPC_URL"
+        ;;
+    sepolia)
+        deploy_to_network "sepolia" "$SEPOLIA_RPC_URL"
+        ;;
+    localhost)
+        echo -e "${GREEN}🏠 Deploying to localhost (Anvil)...${NC}"
+        echo -e "${YELLOW}⚠️  Make sure Anvil is running on http://localhost:8545${NC}"
+        deploy_to_network "localhost" "http://localhost:8545"
+        ;;
+    devnet)
+        echo -e "${GREEN}🧪 Deploying to vlayer devnet...${NC}"
+        deploy_to_network "devnet" "$VLAYER_RPC_URL"
+        ;;
+    *)
+        echo -e "${YELLOW}Usage: ./deploy.sh [network]${NC}"
+        echo ""
+        echo "Available networks:"
+        echo "  polygon   - Polygon mainnet"
+        echo "  mumbai    - Polygon Mumbai testnet"
+        echo "  sepolia   - Ethereum Sepolia testnet"
+        echo "  localhost - Local Anvil node"
+        echo "  devnet    - vlayer devnet"
+        echo ""
+        echo "Example: ./deploy.sh mumbai"
+        exit 1
+        ;;
+esac
+
+echo ""
+echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║     Deployment Complete! 🎉            ║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"

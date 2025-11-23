@@ -1,0 +1,51 @@
+# Foundry
+cache/
+out/
+broadcast/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Deployments (keep the directory structure)
+# deployments/*.json files are tracked
+deployments/.gitkeep
+
+# Backup files
+*.bak
+*.backup
+
+# Solidity coverage
+coverage/
+coverage.json
+
+# Typechain
+typechain/
+typechain-types/
+
+# Hardhat (if used)
+artifacts/
+cache_hardhat/
+
+# Logs
+*.log
+logs/
+
+# Test output
+test-results/
+*.lcov
