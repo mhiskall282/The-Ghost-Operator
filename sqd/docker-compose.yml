@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: squid
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  processor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_NAME=squid
+      - DB_PORT=5432
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - RPC_ENDPOINT=${RPC_ENDPOINT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run process
+    restart: unless-stopped
+
+  graphql:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_NAME=squid
+      - DB_PORT=5432
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - GQL_PORT=4350
+    ports:
+      - "4350:4350"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run serve:prod
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

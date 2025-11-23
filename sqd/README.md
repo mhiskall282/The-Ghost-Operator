@@ -52,11 +52,27 @@ Smart contract escrows funds and pays out once the Fluence node confirms proof v
 
 Data – SQD
 
-Indexes:
-• payouts
-• tasks completed
-• proof histories
-…and generates a Worker Reputation Score.
+Indexes all payment events on Polygon to track:
+• Payment history and amounts
+• Tasks completed by each worker
+• Proof verification records
+• Worker success rates
+
+Generates a Worker Reputation Score (0-100) based on:
+• Task completion count (40%)
+• Total earnings (30%)
+• Success rate (20%)
+• Consistency over time (10%)
+
+The reputation system enables:
+✓ Gating premium/high-value tasks to proven workers
+✓ Reputation-based bonus multipliers
+✓ Analytics and leaderboards
+✓ Fraud detection and quality control
+
+**GraphQL API**: Query worker reputation, payment history, and platform statistics in real-time.
+
+📊 See `/sqd/` folder for the complete indexer implementation.
 
 ⸻
 

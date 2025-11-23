@@ -1,0 +1,16 @@
+manifest_version: subsquid.io/v0.1
+name: ghost-bot-sqd
+version: 1
+description: SQD indexer for Ghost Bot payment history and worker reputation
+
+build:
+  dockerfile: Dockerfile
+
+deploy:
+  addons:
+    postgres:
+      version: "14"
+  processor:
+    cmd: ["npm", "run", "process"]
+  api:
+    cmd: ["npm", "run", "serve:prod"]

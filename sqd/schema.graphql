@@ -1,45 +1,58 @@
-type Bounty @entity {
-  id: ID!
-  creator: String!
-  action: Int! # 0=Star, 1=Fork, 2=MergePR, 3=Comment, 4=OpenIssue
-  repoOwner: String!
-  repoName: String!
-  prOrIssueNumber: BigInt!
-  reward: BigInt!
-  status: Int! # 0=Active, 1=Completed, 2=Cancelled
-  completedBy: String
-  createdAt: BigInt!
-  completedAt: BigInt
-  createdAtTimestamp: Date!
-  completedAtTimestamp: Date
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
 }
 
-type Payout @entity {
-  id: ID!
-  bountyId: BigInt!
-  worker: String!
-  amount: BigInt!
-  timestamp: BigInt!
-  timestampDate: Date!
-  proofId: String
+enum TaskType {
+  STAR_REPO
+  MERGE_PR
+  OPEN_ISSUE
+  COMMENT
+  CUSTOM
 }
 
 type Worker @entity {
-  id: ID! # worker address
-  completedBounties: Int!
-  totalEarnings: BigInt!
-  reputationScore: Float!
-  firstBountyAt: BigInt
-  lastBountyAt: BigInt
-  payouts: [Payout!]! @derivedFrom(field: "worker")
+  id: ID! # Worker's wallet address
+  totalEarned: BigInt!
+  totalTasksCompleted: Int!
+  successRate: Float!
+  averagePaymentTime: Int! # in seconds
+  firstPaymentAt: DateTime
+  lastPaymentAt: DateTime
+  payments: [Payment!]! @derivedFrom(field: "worker")
+  reputationScore: Float! # Calculated score based on history
 }
 
-type Proof @entity {
-  id: ID! # proof ID from vlayer
-  bountyId: BigInt!
-  worker: String!
-  verified: Boolean!
-  timestamp: BigInt!
-  timestampDate: Date!
+type Payment @entity {
+  id: ID! # Transaction hash
+  worker: Worker!
+  amount: BigInt!
+  token: String! # Token contract address (e.g., USDC)
+  status: PaymentStatus!
+  taskType: TaskType!
+  taskDescription: String
+  proofId: String! # vlayer proof ID
+  blockNumber: Int!
+  timestamp: DateTime!
+  transactionHash: String!
+  gasUsed: BigInt
 }
 
+type BountyContract @entity {
+  id: ID! # Contract address
+  totalPayments: BigInt!
+  totalWorkers: Int!
+  averagePayment: BigInt!
+  deployedAt: DateTime!
+  owner: String!
+}
+
+type DailyStats @entity {
+  id: ID! # Date in YYYY-MM-DD format
+  date: DateTime!
+  totalPayments: BigInt!
+  paymentCount: Int!
+  uniqueWorkers: Int!
+  averagePayment: BigInt!
+}

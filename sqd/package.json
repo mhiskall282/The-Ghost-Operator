@@ -1,31 +1,32 @@
 {
-  "name": "ghost-bounties-indexer",
-  "version": "0.1.0",
-  "description": "SQD indexer for GhostBounties",
-  "main": "dist/index.js",
-  "type": "module",
+  "name": "ghost-bot-sqd",
+  "version": "1.0.0",
+  "description": "SQD indexer for Ghost Bot payment history and worker reputation",
+  "main": "lib/main.js",
   "scripts": {
-    "build": "tsc",
-    "codegen": "sqd codegen",
-    "build:sqd": "sqd build",
-    "deploy": "sqd deploy"
+    "build": "rm -rf lib && tsc",
+    "codegen": "squid-typeorm-codegen",
+    "db:migrate": "squid-typeorm-migration apply",
+    "db:create-migration": "squid-typeorm-migration generate",
+    "process": "node --require=dotenv/config lib/main.js",
+    "serve": "squid-graphql-server",
+    "serve:prod": "squid-graphql-server --dumb-cache in-memory --dumb-cache-ttl 1000 --dumb-cache-size 100 --dumb-cache-max-age 1000",
+    "check-updates": "npx npm-check-updates --filter /subsquid/",
+    "update": "npx npm-check-updates --filter /subsquid/ -u && npm i",
+    "open": "npx squid-commands explorer"
   },
-  "keywords": [
-    "sqd",
-    "indexer",
-    "bounties"
-  ],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
-    "@subsquid/evm-processor": "^1.0.0",
-    "@subsquid/graphql-server": "^1.0.0",
-    "@subsquid/pipes": "^0.1.0-beta.6",
-    "@subsquid/substrate-processor": "^1.0.0"
+    "@subsquid/evm-processor": "latest",
+    "@subsquid/typeorm-store": "latest",
+    "@subsquid/graphql-server": "latest",
+    "@subsquid/typeorm-migration": "latest",
+    "dotenv": "^16.4.5",
+    "pg": "^8.13.1",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
-    "@subsquid/cli": "^1.0.0",
-    "@types/node": "^20.14.0",
-    "typescript": "^5.5.0"
+    "@subsquid/typeorm-codegen": "latest",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
   }
 }
