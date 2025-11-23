@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "clean-db": "rm -f *.db3* && echo '✅ Database cleaned'",
+    "dev": "./start.sh",
+    "dev:direct": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "node validate.mjs",

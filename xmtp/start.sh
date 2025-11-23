@@ -1,33 +1,44 @@
 #!/bin/bash
 
-# GhostBot XMTP Agent Setup Script
+# GhostBot Agent Launcher
+# Automatically switches to Node v20 and starts the agent
 
-echo "👻 GhostBot XMTP Agent Setup"
-echo "=============================="
-echo ""
+cd "$(dirname "$0")"
 
-# Check if .env exists
-if [ -f .env ]; then
-    echo "✅ .env file found"
-else
-    echo "⚠️  .env file not found. Creating from .env.example..."
-    cp .env.example .env
-    echo "📝 Please edit .env and add your keys:"
-    echo "   - XMTP_WALLET_KEY (your private key)"
-    echo "   - XMTP_DB_ENCRYPTION_KEY (run: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\")"
-    echo ""
+# Fix npm_config_prefix issue with nvm
+unset npm_config_prefix
+
+# Source nvm and switch to Node 20
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+    export NVM_DIR="$HOME/.nvm"
+    \. "$NVM_DIR/nvm.sh"
+    
+    CURRENT=$(node --version 2>/dev/null || echo "none")
+    if [[ $CURRENT != v20.* ]]; then
+        echo "📦 Switching to Node v20..."
+        nvm use 20 2>/dev/null || { nvm install 20 && nvm use 20; }
+        echo ""
+    fi
+fi
+
+# Verify Node 20
+CURRENT=$(node --version)
+if [[ $CURRENT != v20.* ]]; then
+    echo "❌ Node v20 required. Current: $CURRENT"
+    echo "Please run: nvm use 20"
     exit 1
 fi
 
-# Check if node_modules exists
-if [ -d node_modules ]; then
-    echo "✅ Dependencies installed"
+# Clean database files
+DB_COUNT=$(ls *.db3* 2>/dev/null | wc -l | tr -d ' ')
+if [ "$DB_COUNT" -gt 0 ]; then
+    rm -f *.db3*
+    echo "✅ Database cleaned • Node $(node --version)"
 else
-    echo "📦 Installing dependencies..."
-    npm install
+    echo "✅ Node $(node --version) • Ready"
 fi
 
 echo ""
-echo "🚀 Starting GhostBot Agent in development mode..."
-echo ""
-npm run dev
+
+# Start the agent
+exec tsx watch src/index.ts

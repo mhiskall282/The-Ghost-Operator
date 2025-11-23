@@ -165,7 +165,7 @@ class GhostBotAgent {
 
       if (!verificationResult.valid) {
         await ctx.sendText(
-          `❌ **Verification Failed**\n\n${verificationResult.error}\n\nPlease make sure you completed the task and try again.`
+          `❌ Verification Failed\n\n${verificationResult.error}\n\nPlease make sure you completed the task and try again.`
         );
         return;
       }
@@ -178,7 +178,7 @@ class GhostBotAgent {
 
       if (!vlayerValid) {
         await ctx.sendText(
-          "❌ **Cross-verification failed**\n\nThe proof could not be verified on-chain."
+          "❌ Cross-verification failed\n\nThe proof could not be verified on-chain."
         );
         return;
       }
@@ -195,25 +195,27 @@ class GhostBotAgent {
 
       if (!paymentResult.success) {
         await ctx.sendText(
-          `❌ **Payment Failed**\n\n${paymentResult.error}\n\nPlease contact support.`
+          `❌ Payment Failed\n\n${paymentResult.error}\n\nPlease contact support.`
         );
         return;
       }
 
       // Success! Send celebration message
       await ctx.sendText(
-        `🎉 **PAYMENT SENT!**
+        `🎉 PAYMENT SENT!
 
 ✅ Verification: Passed
 ✅ Amount: 5 USDC
-✅ Transaction: \`${paymentResult.txHash}\`
+✅ Transaction: ${paymentResult.txHash}
 
-💰 Payment sent to: \`${userAddress}\`
+💰 Payment sent to: ${userAddress}
 
 🔍 View on Polygonscan:
 https://amoy.polygonscan.com/tx/${paymentResult.txHash}
 
-Thanks for completing the bounty! Type \`jobs\` to find more. 🚀`
+🌐 Visit: https://the-ghost-operator.vercel.app/
+
+Thanks for completing the bounty! Type "jobs" to find more. 🚀`
       );
 
       console.log(`✅ Payment completed for ${userAddress}`);

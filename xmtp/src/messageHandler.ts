@@ -56,18 +56,20 @@ export class MessageHandler {
   }
 
   private getHelpMessage(): string {
-    return `👻 **Welcome to GhostBounties!**
+    return `👻 Welcome to GhostBounties!
 
 I'm an autonomous agent that pays you instantly for completing verified GitHub tasks.
 
-**Commands:**
-• \`jobs\` or \`bounties\` - See available bounties
-• \`claim [bounty-id]\` - Claim a bounty
-• \`submit [proof-id]\` - Submit your ZK proof
-• \`status\` - Check your claimed bounties
-• \`help\` - Show this message
+Commands:
+• jobs or bounties - See available bounties
+• claim [bounty-id] - Claim a bounty
+• submit [proof-id] - Submit your ZK proof
+• status - Check your claimed bounties
+• help - Show this message
 
-Type \`jobs\` to get started! 🚀`;
+🌐 Visit our website: https://the-ghost-operator.vercel.app/
+
+Type "jobs" to get started! 🚀`;
   }
 
   private listBounties(): string {
@@ -77,16 +79,17 @@ Type \`jobs\` to get started! 🚀`;
       return "❌ No active bounties available right now. Check back soon!";
     }
 
-    let response = "💰 **Available Bounties:**\n\n";
+    let response = "💰 Available Bounties:\n\n";
 
     bounties.forEach((bounty, index) => {
-      response += `**${index + 1}. ${bounty.title}** (ID: \`${bounty.id}\`)\n`;
+      response += `${index + 1}. ${bounty.title}\n`;
+      response += `   ID: ${bounty.id}\n`;
       response += `   📝 ${bounty.description}\n`;
-      response += `   💵 Reward: **${bounty.reward}**\n`;
+      response += `   💵 Reward: ${bounty.reward}\n`;
       response += `   🔗 ${bounty.githubUrl}\n\n`;
     });
 
-    response += "\n💡 To claim a bounty, type: `claim bounty-001`";
+    response += "💡 To claim a bounty, type: claim bounty-001";
 
     return response;
   }
@@ -96,38 +99,40 @@ Type \`jobs\` to get started! 🚀`;
     const match = message.match(/bounty-\d+/);
 
     if (!match) {
-      return "❌ Please specify a bounty ID. Example: `claim bounty-001`";
+      return "❌ Please specify a bounty ID. Example: claim bounty-001";
     }
 
     const bountyId = match[0];
     const bounty = this.bountyStore.getBountyById(bountyId);
 
     if (!bounty) {
-      return `❌ Bounty \`${bountyId}\` not found. Type \`jobs\` to see available bounties.`;
+      return `❌ Bounty ${bountyId} not found. Type "jobs" to see available bounties.`;
     }
 
     if (bounty.status !== "active") {
-      return `❌ Bounty \`${bountyId}\` is no longer available.`;
+      return `❌ Bounty ${bountyId} is no longer available.`;
     }
 
     // Claim the bounty
     const claimed = this.bountyStore.claimBounty(bountyId, userAddress);
 
     if (!claimed) {
-      return `❌ Failed to claim bounty \`${bountyId}\`. It may have been claimed by someone else.`;
+      return `❌ Failed to claim bounty ${bountyId}. It may have been claimed by someone else.`;
     }
 
-    return `✅ **Bounty Claimed!**
+    return `✅ Bounty Claimed!
 
-📋 **Task:** ${bounty.title}
-💵 **Reward:** ${bounty.reward}
-🔗 **GitHub:** ${bounty.githubUrl}
+📋 Task: ${bounty.title}
+💵 Reward: ${bounty.reward}
+🔗 GitHub: ${bounty.githubUrl}
 
-**Next Steps:**
+Next Steps:
 1. Complete the task on GitHub
-2. Generate your ZK proof: ${bounty.vlayerProofUrl || "URL coming soon"}
+2. Generate your ZK proof: ${
+      bounty.vlayerProofUrl || "https://prover.vlayer.xyz"
+    }
 3. Copy the Proof ID you receive
-4. Send me: \`submit [your-proof-id]\`
+4. Send me: submit [your-proof-id]
 
 ⏰ You have 24 hours to complete this task. Good luck! 🚀`;
   }
@@ -140,16 +145,16 @@ Type \`jobs\` to get started! 🚀`;
       return `❌ Invalid proof format. 
 
 Please submit your proof like this:
-\`submit 0x1234...abcd\`
+submit 0x1234...abcd
 or
-\`submit proof-abc-123\``;
+submit proof-abc-123`;
     }
 
     const proofId = proofMatch[0];
 
-    return `🔍 **Proof Received!**
+    return `🔍 Proof Received!
 
-Proof ID: \`${proofId}\`
+Proof ID: ${proofId}
 
 ⏳ Verifying your proof with Fluence...
 This usually takes 30-60 seconds.
@@ -159,15 +164,17 @@ I'll send you a message when verification is complete! ⚡`;
 
   private getUserStatus(userAddress: string): string {
     // TODO: Implement actual user status tracking
-    return `📊 **Your Status**
+    return `📊 Your Status
 
-Wallet: \`${userAddress.slice(0, 6)}...${userAddress.slice(-4)}\`
+Wallet: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}
 
 🏆 Completed Bounties: 0
 💰 Total Earned: 0 USDC
 ⏳ Pending Verifications: 0
 
-Type \`jobs\` to find new bounties! 🚀`;
+🌐 Website: https://the-ghost-operator.vercel.app/
+
+Type "jobs" to find new bounties! 🚀`;
   }
 
   /**
