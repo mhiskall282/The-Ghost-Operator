@@ -73,6 +73,19 @@ export default function App() {
     }
   };
 
+  const handleImageClick = (e) => {
+    const img = e.currentTarget;
+    // Remove any existing animation class first
+    img.classList.remove('animate');
+    // Force reflow to restart animation
+    void img.offsetWidth;
+    // Add animation class
+    img.classList.add('animate');
+    setTimeout(() => {
+      img.classList.remove('animate');
+    }, 600);
+  };
+
   return (
     <>
       {/* ---- GLOBAL CSS ---- */}
@@ -128,6 +141,7 @@ export default function App() {
           width: auto;
           max-width: 200px;
           object-fit: contain;
+          object-position: center;
           filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
           transition: all 0.3s;
           animation: logoGlow 3s ease-in-out infinite;
@@ -192,13 +206,41 @@ export default function App() {
           max-width: 1200px; padding: 2rem;
           display: grid; gap: 3rem;
           grid-template-columns: 1fr 1fr;
+          align-items: center;
+        }
+        .hero-image {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
         }
         .hero-image img {
-          width: 100%; border-radius: 20px;
+          width: 100%;
+          height: 100%;
+          max-height: 500px;
+          border-radius: 20px;
           filter: drop-shadow(0 0 30px rgba(139,92,246,0.6));
           background: rgba(139, 92, 246, 0.1);
-          min-height: 400px;
-          object-fit: cover;
+          object-fit: contain;
+          object-position: center;
+          cursor: pointer;
+          transition: all 0.4s ease;
+        }
+        .hero-image img:hover {
+          transform: scale(1.05);
+          filter: drop-shadow(0 0 40px rgba(139,92,246,0.9));
+        }
+        .hero-image img:active {
+          transform: scale(0.98);
+        }
+        @keyframes heroPulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.08); }
+        }
+        .hero-image img.animate {
+          animation: heroPulse 0.6s ease;
         }
         .particles { position: absolute; width: 100%; height: 100%; }
 
@@ -224,10 +266,19 @@ export default function App() {
           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         }
         .feature-card {
-          background: rgba(139,92,246,0.1);
-          padding: 2.5rem; border-radius: 20px;
-          border: 1px solid rgba(139,92,246,0.2);
+          background: transparent;
+          padding: 2rem;
+          border-radius: 0;
+          border: none;
           text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+          transform: translateY(-5px);
         }
 
         /* STEPS */
@@ -339,26 +390,43 @@ export default function App() {
         /* FEATURE CARD STYLES */
         .feature-card h3 {
           font-size: 1.5rem;
-          margin: 1.5rem 0 1rem;
+          margin: 0 0 1rem;
           font-family: 'Space Grotesk', sans-serif;
           color: var(--accent);
+          font-weight: 600;
         }
         .feature-card p {
           color: var(--text-light);
           line-height: 1.6;
+          margin: 0;
         }
         .feature-image {
           width: 100%;
-          max-width: 200px;
-          height: 200px;
-          object-fit: cover;
-          border-radius: 15px;
-          margin-bottom: 1rem;
-          background: rgba(139, 92, 246, 0.1);
+          max-width: 300px;
+          height: 250px;
+          object-fit: contain;
+          object-position: center;
+          border-radius: 0;
+          margin: 0 auto 1.5rem;
+          display: block;
+          background: transparent;
+          padding: 0;
+          cursor: pointer;
+          transition: all 0.3s ease;
         }
-        .feature-icon {
-          font-size: 4rem;
-          margin-bottom: 1rem;
+        .feature-image:hover {
+          transform: scale(1.1);
+          filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.8));
+        }
+        .feature-image:active {
+          transform: scale(0.95);
+        }
+        @keyframes imagePulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        .feature-image.animate {
+          animation: imagePulse 0.6s ease;
         }
 
         /* HOW IT WORKS SECTION */
@@ -398,8 +466,30 @@ export default function App() {
           line-height: 1.6;
         }
         .character-image {
+          width: 100%;
+          max-width: 250px;
+          height: auto;
           border-radius: 20px;
           filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+          object-fit: contain;
+          object-position: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .character-image:hover {
+          transform: scale(1.1) rotate(2deg);
+          filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8));
+        }
+        .character-image:active {
+          transform: scale(0.95) rotate(-2deg);
+        }
+        @keyframes characterSpin {
+          0% { transform: scale(1) rotate(0deg); }
+          50% { transform: scale(1.1) rotate(5deg); }
+          100% { transform: scale(1) rotate(0deg); }
+        }
+        .character-image.animate {
+          animation: characterSpin 0.6s ease;
         }
 
         /* CTA SECTION */
@@ -423,6 +513,9 @@ export default function App() {
           .hero h1 {
             font-size: 2.5rem;
           }
+          .hero-image img {
+            max-height: 300px;
+          }
           nav {
             padding: 1rem;
             flex-wrap: wrap;
@@ -435,13 +528,20 @@ export default function App() {
             padding: 0.6rem 1.2rem;
             font-size: 0.9rem;
           }
+          .feature-image {
+            max-width: 180px;
+            height: 150px;
+          }
+          .character-image {
+            max-width: 200px;
+          }
         }
       `}</style>
 
       {/* ================= NAVIGATION ================= */}
       <nav>
         <a href="#" className="logo">
-          <img src="/images/HD%20Anonymous.jpeg" alt="GhostBounties Logo" />
+          <img src="/images/images/logo.png" alt="GhostBounties Logo" />
           <span className="logo-text">GhostBounties</span>
         </a>
 
@@ -476,7 +576,7 @@ export default function App() {
           </div>
 
           <div className="hero-image">
-            <img src="/images/HD%20Anonymous.jpeg" alt="GhostBounties Hero" />
+            <img src="/images/images/hero-image.jpeg" alt="GhostBounties Hero" onClick={(e) => handleImageClick(e)} />
           </div>
 
           <div className="particles" id="particles"></div>
@@ -493,37 +593,37 @@ export default function App() {
 
           <div className="features-grid">
             <div className="feature-card">
-              <img src="/images/_%20%2813%29.jpeg" className="feature-image" alt="Privacy First" />
+              <img src="/images/feature-3.jpeg" className="feature-image" alt="Privacy First" onClick={(e) => handleImageClick(e)} />
               <h3>Privacy First</h3>
               <p>Never share GitHub cookies or credentials.</p>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">💰</div>
+              <img src="/images/images/feature-1.jpeg" className="feature-image" alt="Instant Payments" onClick={(e) => handleImageClick(e)} />
               <h3>Instant Payments</h3>
               <p>Smart contracts pay instantly when your proof is valid.</p>
             </div>
 
             <div className="feature-card">
-              <img src="/images/_%20%2814%29.jpeg" className="feature-image" alt="Chat Native" />
+              <img src="/images/feature-4.jpeg" className="feature-image" alt="Chat Native" onClick={(e) => handleImageClick(e)} />
               <h3>Chat-Native</h3>
               <p>Chat with the bot via XMTP. No dashboard needed.</p>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">📊</div>
+              <img src="/images/images/feature-2.jpeg" className="feature-image" alt="Build Reputation" onClick={(e) => handleImageClick(e)} />
               <h3>Build Reputation</h3>
               <p>Every proof boosts your decentralized GitHub reputation.</p>
             </div>
 
             <div className="feature-card">
-              <img src="/images/_%20%2813%29.jpeg" className="feature-image" alt="Privacy First" />
+              <img src="/images/feature-5.jpeg" className="feature-image" alt="Fully Automated" onClick={(e) => handleImageClick(e)} />
               <h3>Fully Automated</h3>
               <p>Fluence handles verification. Polygon handles payouts.</p>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">🌐</div>
+              <img src="/images/images/feature-1.jpeg" className="feature-image" alt="Trustless & Decentralized" onClick={(e) => handleImageClick(e)} />
               <h3>Trustless & Decentralized</h3>
               <p>ZK-TLS, decentralized compute, and unstoppable payouts.</p>
             </div>
@@ -539,10 +639,11 @@ export default function App() {
 
           <div style={{ textAlign: "center", margin: "3rem 0" }}>
             <img
-              src="/images/_%20%2815%29.jpeg"
+              src="/images/feature-6.jpeg"
               className="character-image"
               style={{ maxWidth: "250px" }}
               alt="How It Works"
+              onClick={(e) => handleImageClick(e)}
             />
           </div>
 
