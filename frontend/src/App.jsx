@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 
 export default function App() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
   useEffect(() => {
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -10,6 +12,8 @@ export default function App() {
         if (target) {
           target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
+        // Close mobile menu on link click
+        setIsMobileMenuOpen(false);
       });
     });
 
@@ -71,6 +75,11 @@ export default function App() {
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
+    setIsMobileMenuOpen(false);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   const handleImageClick = (e) => {
@@ -178,6 +187,39 @@ export default function App() {
         .nav-links a:hover { color: var(--accent); }
         .nav-links a:hover::after { width: 100%; }
 
+        .hamburger {
+          display: none;
+          flex-direction: column;
+          gap: 5px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          z-index: 1001;
+        }
+        .hamburger span {
+          width: 25px;
+          height: 3px;
+          background: var(--accent);
+          border-radius: 2px;
+          transition: all 0.3s;
+        }
+        .hamburger.active span:nth-child(1) {
+          transform: rotate(45deg) translate(8px, 8px);
+        }
+        .hamburger.active span:nth-child(2) {
+          opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+          transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        .mobile-only {
+          display: none;
+        }
+        .desktop-only {
+          display: inline-block;
+        }
+
         .cta-button {
           padding: 0.8rem 1.8rem;
           background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -186,10 +228,32 @@ export default function App() {
           position: relative; overflow: hidden;
           transition: all 0.3s;
           display: inline-block;
+          border: none;
+          cursor: pointer;
+        }
+        .cta-button::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.3);
+          transform: translate(-50%, -50%);
+          transition: width 0.6s, height 0.6s;
+        }
+        .cta-button:hover::before {
+          width: 300px;
+          height: 300px;
         }
         .cta-button:hover {
           transform: translateY(-2px);
           box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+        .cta-button span {
+          position: relative;
+          z-index: 1;
         }
 
         /* -------- HERO SECTION -------- */
@@ -284,7 +348,7 @@ export default function App() {
         /* STEPS */
         .steps {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+          grid-template-columns: repeat(3, 1fr);
           gap: 2rem;
         }
         
@@ -326,6 +390,11 @@ export default function App() {
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           font-family: 'Space Grotesk', sans-serif;
+          word-wrap: break-word;
+          hyphens: auto;
+        }
+        .hero h1 br {
+          display: block;
         }
         .subtitle {
           font-size: 1.25rem;
@@ -350,6 +419,22 @@ export default function App() {
           position: relative;
           overflow: hidden;
         }
+        .btn-primary::before, .btn-secondary::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.3);
+          transform: translate(-50%, -50%);
+          transition: width 0.6s, height 0.6s;
+        }
+        .btn-primary:hover::before, .btn-secondary:hover::before {
+          width: 300px;
+          height: 300px;
+        }
         .btn-primary {
           background: linear-gradient(135deg, var(--primary), var(--secondary));
           color: white;
@@ -357,6 +442,10 @@ export default function App() {
         .btn-primary:hover {
           transform: translateY(-2px);
           box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+        .btn-primary span, .btn-secondary span {
+          position: relative;
+          z-index: 1;
         }
         .btn-secondary {
           background: transparent;
@@ -402,21 +491,23 @@ export default function App() {
         }
         .feature-image {
           width: 100%;
-          max-width: 300px;
-          height: 250px;
-          object-fit: contain;
+          max-width: 400px;
+          height: 280px;
+          object-fit: cover;
           object-position: center;
-          border-radius: 0;
+          border-radius: 20px;
           margin: 0 auto 1.5rem;
           display: block;
           background: transparent;
           padding: 0;
           cursor: pointer;
           transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
         .feature-image:hover {
-          transform: scale(1.1);
+          transform: scale(1.05);
           filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.8));
+          box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
         }
         .feature-image:active {
           transform: scale(0.95);
@@ -506,34 +597,110 @@ export default function App() {
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
+          .mobile-only {
+            display: block;
+          }
+          .desktop-only {
+            display: none;
+          }
+          .hamburger {
+            display: flex;
+          }
+          .nav-links {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            height: 100vh;
+            width: 70%;
+            max-width: 300px;
+            background: rgba(30, 27, 75, 0.98);
+            backdrop-filter: blur(10px);
+            flex-direction: column;
+            padding: 6rem 2rem 2rem;
+            gap: 2rem;
+            transition: right 0.3s ease;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+          }
+          .nav-links.active {
+            right: 0;
+          }
+          .nav-links li {
+            width: 100%;
+          }
+          .nav-links a {
+            display: block;
+            padding: 1rem;
+            font-size: 1.1rem;
+          }
           .hero-content {
             grid-template-columns: 1fr;
             text-align: center;
+            padding: 1rem;
           }
           .hero h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
+            line-height: 1.3;
+          }
+          .hero h1 br {
+            display: none;
           }
           .hero-image img {
             max-height: 300px;
           }
+          .hero-buttons {
+            justify-content: center;
+          }
           nav {
             padding: 1rem;
-            flex-wrap: wrap;
           }
-          .nav-links {
-            gap: 1rem;
-            font-size: 0.9rem;
+          .logo-text {
+            font-size: 1.25rem;
           }
           .cta-button {
             padding: 0.6rem 1.2rem;
             font-size: 0.9rem;
           }
           .feature-image {
-            max-width: 180px;
-            height: 150px;
+            max-width: 280px;
+            height: 200px;
           }
           .character-image {
             max-width: 200px;
+          }
+          .steps {
+            grid-template-columns: 1fr;
+          }
+          .section-title {
+            font-size: 2rem;
+          }
+          .subtitle {
+            font-size: 1rem;
+          }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .steps {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .hero h1 {
+            font-size: 2.8rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hero h1 {
+            font-size: 1.75rem;
+          }
+          .btn-primary, .btn-secondary {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+          }
+          .section-title {
+            font-size: 1.75rem;
+          }
+          .feature-image {
+            max-width: 240px;
+            height: 180px;
           }
         }
       `}</style>
@@ -545,13 +712,24 @@ export default function App() {
           <span className="logo-text">GhostBounties</span>
         </a>
 
-        <ul className="nav-links">
+        <ul className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
           <li><a href="#features">Features</a></li>
           <li><a href="#how-it-works">How It Works</a></li>
           <li><a href="#docs">Docs</a></li>
+          <li className="mobile-only"><a href="#get-started">Get Started</a></li>
         </ul>
 
-        <a href="#get-started" className="cta-button">
+        <button 
+          className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <a href="#get-started" className="cta-button desktop-only">
           <span>Get Started</span>
         </a>
       </nav>
@@ -694,7 +872,7 @@ export default function App() {
           <p>No sign-ups. No KYC. Just chat and earn.</p>
 
           <a
-            href="https://github.com/mhiskall282/the-ghost-operator"
+            href="https://github.com/your-org/ghost-bot"
             className="cta-button"
             style={{ background: "white", color: "var(--primary)" }}
           >
@@ -709,10 +887,10 @@ export default function App() {
           <div className="footer-links">
             <a href="#features">Features</a>
             <a href="#how-it-works">How It Works</a>
-            <a href="https://github.com/mhiskall282/the-bot-operator">GitHub</a>
+            <a href="https://github.com/your-org/ghost-bot">GitHub</a>
             <a href="/README.md">Documentation</a>
           </div>
-          <p>© 2024 GhostBounties. Built with ❤️ using Fluence, XMTP, vlayer, Polygon, SQD.</p>
+          <p>© 2025 GhostBounties. Built with ❤️ using Fluence, XMTP, vlayer, Polygon, SQD.</p>
         </div>
       </footer>
     </>
