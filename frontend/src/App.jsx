@@ -694,7 +694,7 @@ export default function App() {
           <p>No sign-ups. No KYC. Just chat and earn.</p>
 
           <a
-            href="https://github.com/your-org/ghost-bot"
+            href="https://github.com/mhiskall282/the-ghost-operator"
             className="cta-button"
             style={{ background: "white", color: "var(--primary)" }}
           >
@@ -709,7 +709,7 @@ export default function App() {
           <div className="footer-links">
             <a href="#features">Features</a>
             <a href="#how-it-works">How It Works</a>
-            <a href="https://github.com/your-org/ghost-bot">GitHub</a>
+            <a href="https://github.com/mhiskall282/the-bot-operator">GitHub</a>
             <a href="/README.md">Documentation</a>
           </div>
           <p>© 2024 GhostBounties. Built with ❤️ using Fluence, XMTP, vlayer, Polygon, SQD.</p>
