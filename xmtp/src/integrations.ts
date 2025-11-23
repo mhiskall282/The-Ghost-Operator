@@ -1,6 +1,266 @@
 import type { VerificationResult, PaymentResult } from "./types";
 
 /**
+ * PR Verification Types
+ */
+interface PRCreationProof {
+  prNumber: number;
+  title: string;
+  author: string;
+  createdAt: string;
+  state: string;
+  htmlUrl: string;
+  verified: boolean;
+  proofId?: string;
+}
+
+interface PRMergeProof {
+  prNumber: number;
+  merged: boolean;
+  mergedBy: string | null;
+  mergedAt: string | null;
+  verified: boolean;
+  proofId?: string;
+}
+
+/**
+ * vlayer Integration
+ * Handles ZK-TLS proof verification for GitHub PRs
+ */
+export class VlayerService {
+  private apiBaseUrl: string;
+  private clientId: string;
+  private apiSecret: string;
+
+  constructor(apiBaseUrl: string, clientId?: string, apiSecret?: string) {
+    this.apiBaseUrl = apiBaseUrl;
+    this.clientId = clientId || process.env.WEB_PROVER_API_CLIENT_ID || "";
+    this.apiSecret = apiSecret || process.env.WEB_PROVER_API_SECRET || "";
+  }
+
+  /**
+   * Verify that a PR was created by a user
+   */
+  async verifyPRCreation(
+    owner: string,
+    repo: string,
+    prNumber: number,
+    githubToken?: string
+  ): Promise<PRCreationProof | null> {
+    try {
+      const url = `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`;
+
+      const headers = [
+        "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+        "Accept: application/vnd.github+json",
+        "X-GitHub-Api-Version: 2022-11-28",
+      ];
+
+      if (githubToken) {
+        headers.push(`Authorization: Bearer ${githubToken}`);
+      }
+
+      console.log(`🔐 Verifying PR creation: ${owner}/${repo}#${prNumber}`);
+
+      // Generate proof
+      const proveResponse = await fetch(
+        "https://web-prover.vlayer.xyz/api/v1/prove",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-id": this.clientId,
+            Authorization: "Bearer " + this.apiSecret,
+          },
+          body: JSON.stringify({ url, headers }),
+        }
+      );
+
+      if (!proveResponse.ok) {
+        console.error("❌ Failed to generate proof");
+        return null;
+      }
+
+      const presentation = await proveResponse.json();
+
+      // Verify proof
+      const verifyResponse = await fetch(
+        "https://web-prover.vlayer.xyz/api/v1/verify",
+        {
+          method: "POST",
+          headers: {
+            "x-client-id": this.clientId,
+            Authorization: "Bearer " + this.apiSecret,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(presentation),
+        }
+      );
+
+      if (!verifyResponse.ok) {
+        console.error("❌ Failed to verify proof");
+        return null;
+      }
+
+      const verificationResult = await verifyResponse.json();
+      const prData = JSON.parse(verificationResult.response.body);
+
+      console.log(
+        `✅ Verified PR creation: #${prData.number} by ${prData.user.login}`
+      );
+
+      return {
+        prNumber: prData.number,
+        title: prData.title,
+        author: prData.user.login,
+        createdAt: prData.created_at,
+        state: prData.state,
+        htmlUrl: prData.html_url,
+        verified: true,
+        proofId: presentation.id || "unknown",
+      };
+    } catch (error) {
+      console.error("❌ Error verifying PR creation:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Verify that a PR was merged
+   */
+  async verifyPRMerge(
+    owner: string,
+    repo: string,
+    prNumber: number,
+    githubToken?: string
+  ): Promise<PRMergeProof | null> {
+    try {
+      const url = `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`;
+
+      const headers = [
+        "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+        "Accept: application/vnd.github+json",
+        "X-GitHub-Api-Version: 2022-11-28",
+      ];
+
+      if (githubToken) {
+        headers.push(`Authorization: Bearer ${githubToken}`);
+      }
+
+      console.log(`🔐 Verifying PR merge: ${owner}/${repo}#${prNumber}`);
+
+      // Generate proof
+      const proveResponse = await fetch(
+        "https://web-prover.vlayer.xyz/api/v1/prove",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-id": this.clientId,
+            Authorization: "Bearer " + this.apiSecret,
+          },
+          body: JSON.stringify({ url, headers }),
+        }
+      );
+
+      if (!proveResponse.ok) {
+        console.error("❌ Failed to generate proof");
+        return null;
+      }
+
+      const presentation = await proveResponse.json();
+
+      // Verify proof
+      const verifyResponse = await fetch(
+        "https://web-prover.vlayer.xyz/api/v1/verify",
+        {
+          method: "POST",
+          headers: {
+            "x-client-id": this.clientId,
+            Authorization: "Bearer " + this.apiSecret,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(presentation),
+        }
+      );
+
+      if (!verifyResponse.ok) {
+        console.error("❌ Failed to verify proof");
+        return null;
+      }
+
+      const verificationResult = await verifyResponse.json();
+      const prData = JSON.parse(verificationResult.response.body);
+
+      if (!prData.merged) {
+        console.log(`⚠️ PR #${prNumber} is not merged yet`);
+        return {
+          prNumber: prData.number,
+          merged: false,
+          mergedBy: null,
+          mergedAt: null,
+          verified: true,
+          proofId: presentation.id || "unknown",
+        };
+      }
+
+      console.log(
+        `✅ Verified PR merge: #${prData.number} merged by ${
+          prData.merged_by?.login || "unknown"
+        }`
+      );
+
+      return {
+        prNumber: prData.number,
+        merged: true,
+        mergedBy: prData.merged_by?.login || null,
+        mergedAt: prData.merged_at,
+        verified: true,
+        proofId: presentation.id || "unknown",
+      };
+    } catch (error) {
+      console.error("❌ Error verifying PR merge:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Get the proof generation URL for a specific task
+   */
+  getProofUrl(taskType: string, params: Record<string, string>): string {
+    const queryParams = new URLSearchParams(params).toString();
+    return `${this.apiBaseUrl}/prove/${taskType}?${queryParams}`;
+  }
+
+  /**
+   * Verify a proof directly with vlayer
+   */
+  async verifyProofDirect(proofId: string): Promise<boolean> {
+    console.log(`[vlayer] Verifying proof ${proofId}`);
+
+    try {
+      const response = await fetch(
+        "https://web-prover.vlayer.xyz/api/v1/verify",
+        {
+          method: "POST",
+          headers: {
+            "x-client-id": this.clientId,
+            Authorization: "Bearer " + this.apiSecret,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: proofId }),
+        }
+      );
+
+      return response.ok;
+    } catch (error) {
+      console.error("❌ Error verifying proof:", error);
+      return false;
+    }
+  }
+}
+
+/**
  * Fluence Integration
  * Placeholder for decentralized compute verification
  */
@@ -52,39 +312,6 @@ export class FluenceService {
         error: `Verification failed: ${error}`,
       };
     }
-  }
-}
-
-/**
- * vlayer Integration
- * Handles ZK-TLS proof verification
- */
-export class VlayerService {
-  private verifierUrl: string;
-
-  constructor(verifierUrl: string) {
-    this.verifierUrl = verifierUrl;
-  }
-
-  /**
-   * Get the proof generation URL for a specific task
-   */
-  getProofUrl(taskType: string, params: Record<string, string>): string {
-    const queryParams = new URLSearchParams(params).toString();
-    return `${this.verifierUrl}/prove/${taskType}?${queryParams}`;
-  }
-
-  /**
-   * Verify a proof directly with vlayer
-   * TODO: Implement actual vlayer verifier contract call
-   */
-  async verifyProofDirect(proofId: string): Promise<boolean> {
-    console.log(`[vlayer] Verifying proof ${proofId}`);
-
-    // Placeholder: In production, this would verify the proof
-    // against vlayer's verifier contract on-chain
-
-    return true;
   }
 }
 

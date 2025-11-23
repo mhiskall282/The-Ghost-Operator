@@ -288,4 +288,3 @@ This project wouldn't exist without these amazing tools:
 **GhostBounties** — Get paid for GitHub tasks, trustlessly. 👻
 
 Questions? Issues? Just want to say hi? [Open an issue](https://github.com/your-org/ghost-bot/issues) or reach out!
-
