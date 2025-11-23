@@ -1,8 +1,37 @@
-# Ghost Bounties - vlayer Contracts
+# Ghost Bounties - vlayer Integration
 
-Smart contracts for the Ghost Bounties autonomous agent system using vlayer's ZK-TLS technology.
+Smart contracts and vlayer Web Prover integration for the Ghost Bounties autonomous agent system using ZK-TLS technology.
 
-## 🚀 Quick Start
+## 📚 **Documentation Index**
+
+### 🚀 Quick Start
+- **[TEST-SUMMARY.md](./TEST-SUMMARY.md)** - **START HERE!** Complete test results and setup
+- **[QUICKSTART-TESTS.md](./QUICKSTART-TESTS.md)** - Quick test commands
+- **[COMMAND-REFERENCE.md](./COMMAND-REFERENCE.md)** - Complete command reference
+
+### 📖 Detailed Guides
+- **[TESTING-GUIDE.md](./TESTING-GUIDE.md)** - Comprehensive testing guide
+- **[CLEAN-ARCHITECTURE.md](./CLEAN-ARCHITECTURE.md)** - New architecture overview
+- **[PROJECT-STATUS.md](./PROJECT-STATUS.md)** - Project status (85% complete)
+- **[DEPLOYMENT-READY.md](./DEPLOYMENT-READY.md)** - Smart contract deployment
+
+### 🔧 Quick Commands
+
+**Run PR Verification Tests:**
+```bash
+/Users/dreytech/Projects/ghost-bot/vlayer/run-quick-test.sh
+```
+
+**Fix TypeScript Error:**
+```bash
+# Press Cmd+Shift+P → "Reload Window"
+# Or run:
+/Users/dreytech/Projects/ghost-bot/vlayer/fix-typescript-error.sh
+```
+
+---
+
+## 🚀 Old Quick Start (Smart Contracts)
 
 Deploy contracts in 5 minutes:
 
