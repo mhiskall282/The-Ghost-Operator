@@ -1,0 +1,8 @@
+[00:00:01.660] Server  LOG      ✓ Ready in 1379ms
+[00:00:04.742] Server  LOG      ○ Compiling / ...
+[00:00:06.865] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:45:10.559] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[03:51:34.817] Server  ERROR   Error: ENOENT: no such file or directory, scandir '/Users/pablo/The-Ghost-Operator/vouch-github/app'
+[03:51:34.822] Server  ERROR    ⨯ "unhandledRejection:" Error: ENOENT: no such file or directory, scandir '/Users/pablo/The-Ghost-Operator/vouch-github/app'
+[03:51:34.827] Server  ERROR    ⨯ "unhandledRejection: " Error: ENOENT: no such file or directory, scandir '/Users/pablo/The-Ghost-Operator/vouch-github/app'
+[03:51:34.828] Server  LOG      ✓ Compiled in 332ms

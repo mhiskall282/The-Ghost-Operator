@@ -1,0 +1,3 @@
+{
+  "/api/web-proof/[requestId]/route": "app/api/web-proof/[requestId]/route.js"
+}
